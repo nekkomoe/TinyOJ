@@ -2,6 +2,8 @@
 
 	header("Content-type: text/html; charset=utf-8"); 
 
+	set_time_limit(0);
+
 	$file_problem_lists = "problem_lists.ini";
 
 	$flag_show_problem_tag = true;
@@ -85,8 +87,6 @@
 
 		func_show_problem($problem_id, $problem_id);
 
-		echo $file_judge_default_file_name;
-
 		$json_problem_ini = json_decode(file_get_contents($path_problem . $problem_id . "/problem.ini"));
 		$cppName = $file_judge_default_file_name;
 		$dataCount = $json_problem_ini -> data_count;
@@ -96,9 +96,8 @@
 		$outpath = "../" . $path_problem . strval($problem_id) . "/output/";
 		$stdOutputName = $json_problem_ini -> data_name;
 		$time = $json_problem_ini -> time / 1000;
-		echo "cd judge && ./judge $cppName $dataCount $inpath $inputName $outputName $outpath $stdOutputName $time" . "<br/>";
-		$ret = shell_exec("cd judge && ./judge $cppName $dataCount $inpath $inputName $outputName $outpath $stdOutputName $time");
-		return substr_count($ret, "JD_ACCEPT") == 1;
+		// 由于\033转义问题,在网页上不能正常显示
+		echo shell_exec("cd judge && ./judge $cppName $dataCount $inpath $inputName $outputName $outpath $stdOutputName $time");
 	}
 
 ?>
