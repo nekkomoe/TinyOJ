@@ -12,6 +12,8 @@
 
 	$file_judge_default_file_suffix = ".cpp";
 
+	$path_problem = "problem/";
+
 	function func_add_problem($problem_id) {
 		global $file_problem_lists;
 		$tmp = explode(";", file_get_contents($file_problem_lists));
@@ -23,7 +25,7 @@
 	}
 
 	function func_show_problem($start_id, $end_id) {
-		global $file_problem_lists, $flag_show_problem_tag;
+		global $file_problem_lists, $flag_show_problem_tag, $path_problem;
 		
 		// 读取题目编号并确定查询下标
 		$problem_arr = explode(PHP_EOL, file_get_contents($file_problem_lists));
@@ -57,7 +59,7 @@
 		for($i = $st ; $i <= $en ; ++ $i) {
 			// 显示标签
 			$problem_id = $problem_arr[$i];
-			$json_problem_ini = json_decode(file_get_contents($problem_id . "/problem.ini"));
+			$json_problem_ini = json_decode(file_get_contents($path_problem . $problem_id . "/problem.ini"));
 
 			echo $json_problem_ini -> id . "<br/>";
 			echo $json_problem_ini -> title . "<br/>";
@@ -73,25 +75,28 @@
 	}
 
 	function func_judge($problem_id, $content) {
-		global $path_judge, $file_judge_default_file_name, $file_judge_default_file_suffix;
+		global $path_judge, $file_judge_default_file_name, $file_judge_default_file_suffix, $path_problem;
 		file_put_contents($path_judge . $file_judge_default_file_name . $file_judge_default_file_suffix, $content);
 
-		if(!is_readable(strval($problem_id) . "/problem.ini")) {
+		if(!is_readable($path_problem . strval($problem_id) . "/problem.ini")) {
 			echo "can't judge";
 			return;
 		}
 
 		func_show_problem($problem_id, $problem_id);
 
-		$json_problem_ini = json_decode(file_get_contents($problem_id . "/problem.ini"));
-		$cppName = "demo";
+		echo $file_judge_default_file_name;
+
+		$json_problem_ini = json_decode(file_get_contents($path_problem . $problem_id . "/problem.ini"));
+		$cppName = $file_judge_default_file_name;
 		$dataCount = $json_problem_ini -> data_count;
-		$inpath = "../" . strval($problem_id) . "/input/";
+		$inpath = "../" . $path_problem . strval($problem_id) . "/input/";
 		$inputName = $json_problem_ini -> data_name;
 		$outputName = $json_problem_ini -> data_name;
-		$outpath = "../" . strval($problem_id) . "/output/";
+		$outpath = "../" . $path_problem . strval($problem_id) . "/output/";
 		$stdOutputName = $json_problem_ini -> data_name;
 		$time = $json_problem_ini -> time / 1000;
+		echo "cd judge && ./judge $cppName $dataCount $inpath $inputName $outputName $outpath $stdOutputName $time" . "<br/>";
 		$ret = shell_exec("cd judge && ./judge $cppName $dataCount $inpath $inputName $outputName $outpath $stdOutputName $time");
 		return substr_count($ret, "JD_ACCEPT") == 1;
 	}

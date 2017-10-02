@@ -1,4 +1,14 @@
+#include <iostream>
+#include <algorithm>
+#include <cstdio>
+#include <cstring>
 #include <cstdlib>
-int main(){
-system("cat /dev/random");
+
+using namespace std;
+int a, b;
+int main() {
+freopen("aplusb.in", "r", stdin);
+freopen("aplusb.out", "w", stdout);
+cin >> a >> b;
+cout << (a + b) << endl;
 }

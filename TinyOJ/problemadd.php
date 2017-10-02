@@ -1,16 +1,25 @@
 <?php
+    
 	header("Content-type: text/html; charset=utf-8");
 	require "tool.php";
 
 	// 新建题目
 
-	if($_POST["check"] && is_numeric($_POST["problem_id"])) {
-		func_add_problem(intval($_POST["problem_id"]));
-	}
+    if($_POST["submit"]){
+        $tmpname=$_FILES["filename"]["tmp_name"];
+        $filename=$_FILES["filename"]["name"];
+        $file_tar = $path_problem . $filename;
+        move_uploaded_file($tmpname, $file_tar);
+        $problem_id = intval($_FILES["filename"]["name"]);
+        exec("cd $path_problem && tar -xf $filename");
+        func_add_problem($problem_id);
+        func_show_problem($problem_id, $problem_id);
+        exit(0);
+    }
 ?>
 
-<form action="problemadd.php" method="post">
-<input type="hidden" name="check" value="true"></input>
-<input type="input" name="problem_id" placeholder="problem_id"></input><br/>
-<input type="submit"></input>
+
+<form action="" method="post" enctype="multipart/form-data">
+    <input type="file" name="filename"/>
+    <input type="submit" name="submit" value="上传文件(需要是tar文件)并解压"/>
 </form>

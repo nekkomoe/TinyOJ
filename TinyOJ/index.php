@@ -4,6 +4,5 @@
 
 	require "tool.php";
 
-	func_show_problem(1000, 100000);
-
+	func_show_problem(-PHP_INT_MAX, PHP_INT_MAX);
 ?>
